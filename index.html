@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="3D Reconstruction of humans from a monocular video and real-time neural rendering for VR.">
+  <meta name="keywords" content="Body reconstruction, Neural Rendering, TensoRF, real-time">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Real-time volumetric rendering of dynamic humans</title>
+
+
+  <!-- <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet"> -->
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <!-- <link rel="stylesheet" href="./static/css/fontawesome.all.min.css"> -->
+  <!-- <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"> -->
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 style="font-size: 43px" class="title is-1 publication-title">Real-time volumetric rendering of dynamic humans</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.irocco.info/">Ignacio Rocco</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://uk.linkedin.com/in/lvoursl">Iurii Makarov</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://fkokkinos.github.io/">Filippos Kokkinos</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://d-novotny.github.io/">David Novotny</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://ai.facebook.com/people/benjamin-graham/">Benjamin Graham</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://nneverova.github.io/">Natalia Neverova</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.robots.ox.ac.uk/~vedaldi/">Andrea Vedaldi</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Meta AI</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span> -->
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section> -->
+
+
+<section class="hero is-light is-small">
+  
+  <div class="hero-body">
+    <div class="container" id="container-carousel 1" >
+      <h2 style="text-align: center;" class="title is-4">Input videos + SMPL fits</h2>
+      <div id="results-carousel 1" class="carousel results-carousel">
+
+        <div class="item">
+          <!--  -->
+          <video style="width: 437px;" poster="" id="377" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/377_input.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="393" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/393_input.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="394" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/394_input.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item">
+          <!--  -->
+          <video style="width: 437px;" poster="" id="377" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/377_input.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="393" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/393_input.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="394" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/394_input.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="hero-body">
+    <div class="container" id="container-carousel 2" >
+      <h2 style="text-align: center;" class="title is-4">Reconstructions</h2>
+      <div id="results-carousel 2" class="carousel results-carousel">
+
+        <div class="item">
+          <video style="width: 437px;" poster="" id="377-reconstruction" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/377_render.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="393-reconstruction" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/393_render.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="394-reconstruction" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/394_render.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item">
+          <video style="width: 437px;" poster="" id="377-reconstruction" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/377_render.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="393-reconstruction" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/393_render.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item">
+          <video style="width: 437px;" poster="" id="394-reconstruction" autoplay controls muted loop playsinline height="100%">
+            <source src="static/videos/394_render.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        
+      </div>
+      <h3>*Faces have been blurred for privacy</h3>
+    </div>
+  </div>
+
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present a method for fast 3D reconstruction and real-time rendering of dynamic humans from monocular videos with accompanying parametric body fits.
+            Our method can reconstruct a dynamic human in less than 3h using a single GPU, compared to recent state-of-the-art alternatives that take up to 72h.
+          </p> 
+          <p>
+            These speedups are obtained by using a lightweight deformation model solely based on linear blend skinning, and an efficient factorized volumetric representation for modeling the shape and color of the person in canonical pose.
+            Moreover, we propose a novel local ray marching rendering which, by exploiting standard GPU hardware and without any baking or conversion of the radiance field, allows visualizing the neural human on a mobile VR device at 40 frames per second with minimal loss of visual quality.
+          </p>
+          <p>
+            Our experimental evaluation shows superior or competitive results with state-of-the art methods while obtaining large training speedup, using a simple model, and achieving real-time rendering.
+          </p>
+        </div>
+        <!-- <img src="static/architecture.png"> -->
+      </div>
+    </div>
+    <!--/ Abstract. -->
+     <!-- Paper video. -->
+  <div class="columns is-centered has-text-centered">
+  <!-- <div class="content has-text-centered"> -->
+    <div class="column is-four-fifths">
+      <h2 class="title is-3">Method overview</h2>
+      <div class="publication-video">
+      <!-- <div class="content has-text-centered"> -->
+          <video id="Dataset" playsinline="" height="100%" controls="">
+            <source src="static/videos/dynamic_humans.mp4" type="video/mp4">
+          </video>
+      </div>
+    </div>
+  </div>
+</div>
+  <!--/ Paper video. -->
+  <!-- </div> -->
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered"> -->
+      <!-- <div class="column is-four-fifths"> -->
+        
+          
+        <!-- </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+
+ 
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">On-device rendering</h2>
+
+    <p>
+      These videos were recorded from Virtual / Mixed Reality headset with color passthrough capabilities.
+      We render reconstructed humans from ZJU-MoCap dataset with our custom shaders using TensoRF representation. Animation is done with linear blend skinning.
+    </p>
+
+    <br>
+
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content">
+          <h4>Sequence 377</h4>
+          <video autoplay loop src="static/videos/377_vr.mp4" data-canonical-src="static/videos/377_vr.mp4" controls="controls" muted="muted" height="100%" width="100%">
+
+          </video>
+        </div>
+      </div>
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+            <h4>Sequence 393</h4>
+            <video autoplay loop src="static/videos/393_vr.mp4" data-canonical-src="static/videos/393_vr.mp4" controls="controls" muted="muted" height="100%" width="100%">
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="columns is-centered">
+          <div class="column content">
+            <h4>Sequence 394</h4>
+            <video autoplay loop src="static/videos/394_vr.mp4" data-canonical-src="static/videos/394_vr.mp4" controls="controls" muted="muted" height="100%" width="100%">
+            </video>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <h2 class="title is-3">WebGL demos</h2>
+    <p>We also ported our code to WebGL to show real-time rendering capabilities and
+       robustness of our rendering approach: it can run across most popular platforms. </p>
+    <br>
+
+    <div class="columns is-centered">
+        <div class="column">
+          <div class="content">
+            <h4><a href="webgl/377/index.html">Sequence 377</a></h4>
+
+            <div class="card">
+              <a href="webgl/377/index.html">
+                <img src="static/previews/377_blur.png" alt="377">
+              </a>
+              <div class="container">
+                <!-- <h4><b>John Doe</b></h4> -->
+                <p>64 MB</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="column">
+          <div class="columns is-centered">
+            <div class="column content">
+              <h4><a href="webgl/393/index.html">Sequence 393</a></h4>
+
+              <div class="card">
+                <a href="webgl/393/index.html">
+                  <img src="static/previews/393_blur.png" alt="393">
+                </a>
+                <div class="container">
+                  <!-- <h4><b>John Doe</b></h4> -->
+                  <p>62 MB</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <div class="columns is-centered">
+            <div class="column content">
+              <h4><a href="webgl/394/index.html">Sequence 394</a></h4>
+
+              <div class="card">
+                <a href="webgl/394/index.html">
+                  <img src="static/previews/394_blur.png" alt="394">
+                </a>
+                <div class="container">
+                  <!-- <h4><b>John Doe</b></h4> -->
+                  <p>63 MB</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+  </div>
+</section>
+
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3">Visual Effects</h2>
+          <p>
+            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect
+            would be impossible without nerfies since it would require going through a wall.
+          </p>
+          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/dollyzoom-stacked.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="column">
+        <h2 class="title is-3">Matting</h2>
+        <div class="columns is-centered">
+          <div class="column content">
+            <p>
+              As a byproduct of our method, we can also solve the matting problem by ignoring
+              samples that fall outside of a bounding box during rendering.
+            </p>
+            <video id="matting-video" controls playsinline height="100%">
+              <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/matting.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Animation</h2>
+
+        <h3 class="title is-4">Interpolating states</h3>
+        <div class="content has-text-justified">
+          <p>
+            We can also animate the scene by interpolating the deformation latent codes of two input
+            frames. Use the slider here to linearly interpolate between the left frame and the right
+            frame.
+          </p>
+        </div>
+        <div class="columns is-vcentered interpolation-panel">
+          <div class="column is-3 has-text-centered">
+            <img src="https://homes.cs.washington.edu/~kpar/nerfies/images/interpolate_start.jpg"
+                 class="interpolation-image"
+                 alt="Interpolate start reference image."/>
+            <p>Start Frame</p>
+          </div>
+          <div class="column interpolation-video-column">
+            <div id="interpolation-image-wrapper">
+              Loading...
+            </div>
+            <input class="slider is-fullwidth is-large is-info"
+                   id="interpolation-slider"
+                   step="1" min="0" max="100" value="0" type="range">
+          </div>
+          <div class="column is-3 has-text-centered">
+            <img src="https://homes.cs.washington.edu/~kpar/nerfies/images/interpolate_end.jpg"
+                 class="interpolation-image"
+                 alt="Interpolation end reference image."/>
+            <p class="is-bold">End Frame</p>
+          </div>
+        </div>
+        <br/>
+      
+        <h3 class="title is-4">Re-rendering the input video</h3>
+        <div class="content has-text-justified">
+          <p>
+            Using <span class="dnerf">Nerfies</span>, you can re-render a video from a novel
+            viewpoint such as a stabilized camera by playing back the training deformations.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="75%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/replay.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+</section> -->
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{,
+      author    = {Rocco, Ignacio and Makarov, Iurii and Kokkinos, Filippos and Novotny, David and Graham, Benjamin and Neverova, Natalia and Vedaldi, Andrea},
+      title     = {Real-time volumetric rendering of dynamic humans},
+      journal   = {arXiv},
+      year      = {2022},
+    }</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This webpage template is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0 License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
